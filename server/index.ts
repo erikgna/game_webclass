@@ -2,14 +2,12 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-
-import wordManage from "./routes/WordManage";
-
 import { Server } from "socket.io";
 
-// import { Palavra } from "./models/Word";
+import wordManage from "./routes/WordManage";
 import { client } from "./redis";
 import { Palavra } from "./models/Word";
+import { SocketConstants } from "./socket";
 
 dotenv.config();
 
@@ -36,6 +34,7 @@ interface IGame {
   remainingAttempts: number;
   guessedLetters: string[];
   wordList: string[];
+  timestamp: number;
 }
 
 const io = new Server({
@@ -44,46 +43,58 @@ const io = new Server({
   },
 });
 
-io.on("connection", (socket) => {
-  console.log("Usuário conectado");
+io.on(SocketConstants.CONNECTION, (socket) => {
+  socket.on(SocketConstants.NEW_GAME, async (token) => {
+    const word = (await Palavra.aggregate([{ $sample: { size: 1 } }]))[0];
 
-  socket.on("authenticate", async (token) => {
-    // await client.del(token);
+    const fiveMinutes = 300000;
+    const state = {
+      word: word.palavra,
+      dica: word.dica,
+      remainingAttempts: word.palavra.length + 3,
+      guessedLetters: [],
+      timestamp: Date.now() + fiveMinutes,
+      wordList: Array.from({ length: word.palavra.length }, () => "."),
+    };
+    await client.set(token, JSON.stringify(state));
+    socket.emit(SocketConstants.GAME_STATE, {
+      remainingAttempts: state.remainingAttempts,
+      dica: state.dica,
+      guessedLetters: state.guessedLetters,
+      wordList: state.wordList,
+      timestamp: state.timestamp,
+    });
+  });
+
+  socket.on(SocketConstants.AUTHENTICATE, async (token) => {
     try {
       const value = await client.get(token);
       if (value) {
         const state = JSON.parse(value) as IGame;
-        socket.emit("gameStarted", {
+        socket.emit(SocketConstants.GAME_STATE, {
           remainingAttempts: state.remainingAttempts,
           dica: state.dica,
           guessedLetters: state.guessedLetters,
+          timestamp: state.timestamp,
           wordList: state.wordList,
         });
-        return;
       }
+    } catch (_) {}
+  });
 
-      const word = (await Palavra.aggregate([{ $sample: { size: 1 } }]))[0];
+  socket.on(SocketConstants.OUT_OF_TIME, async (token) => {
+    const value = await client.get(token);
+    if (value) {
+      const state = JSON.parse(value) as IGame;
 
-      const state = {
-        word: word.palavra,
-        dica: word.dica,
-        remainingAttempts: word.palavra.length + 3,
-        guessedLetters: [],
-        wordList: Array.from({ length: word.palavra.length }, () => "."),
-      };
-      await client.set(token, JSON.stringify(state));
-      socket.emit("gameStarted", {
-        remainingAttempts: state.remainingAttempts,
-        dica: state.dica,
-        guessedLetters: state.guessedLetters,
-        wordList: state.guessedLetters,
-      });
-    } catch (error) {
-      console.log(error);
+      if (state.timestamp < Date.now()) {
+        socket.emit(SocketConstants.GAME_OVER, state.word);
+        await client.del(token);
+      }
     }
   });
 
-  socket.on("guessLetter", async ({ token, letter }) => {
+  socket.on(SocketConstants.GUESS_LETTER, async ({ token, letter }) => {
     try {
       const value = await client.get(token);
       if (!value) {
@@ -91,12 +102,15 @@ io.on("connection", (socket) => {
       }
       const state = JSON.parse(value) as IGame;
 
-      // Verificar se a letra já foi adivinhada antes
+      if (state.timestamp < Date.now()) {
+        socket.emit(SocketConstants.GAME_OVER, state.word);
+        await client.del(token);
+      }
+
       if (state.guessedLetters.includes(letter)) {
         throw new Error("Essa letra já foi adivinhada");
       }
 
-      // Verificar se a letra está na palavra
       if (!state.word.includes(letter)) {
         state.remainingAttempts--;
       } else {
@@ -107,40 +121,31 @@ io.on("connection", (socket) => {
         }
       }
 
-      // Adicionar a letra à lista de letras adivinhadas
       state.guessedLetters.push(letter);
 
-      // Verificar se o jogo acabou
       if (state.remainingAttempts === 0) {
-        socket.emit("gameOver", { word: state.word });
+        socket.emit(SocketConstants.GAME_OVER, state.word);
         await client.del(token);
       } else if (
         state.word.split("").every((c) => state.guessedLetters.includes(c))
       ) {
-        socket.emit("gameWon", { word: state.word });
+        socket.emit(SocketConstants.GAME_WON, state.word);
         await client.del(token);
       } else {
         await client.set(token, JSON.stringify(state));
-        socket.emit("gameState", {
+        socket.emit(SocketConstants.GAME_STATE, {
           remainingAttempts: state.remainingAttempts,
           dica: state.dica,
           guessedLetters: state.guessedLetters,
           wordList: state.wordList,
         });
       }
-    } catch (error) {
-      console.error(error);
-      socket.emit("gameError", error);
-    }
+    } catch (_) {}
   });
 
-  socket.on("teste", async (token) => {
-    console.log(await client.get(token));
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Usuário desconectado");
-  });
+  // socket.on("teste", async (token) => {
+  //   console.log(await client.get(token));
+  // });
 });
 
 client.connect().then(() => io.listen(8089));
