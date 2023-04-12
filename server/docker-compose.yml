@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - game_mongo_data:/data/db
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - game_redis_data:/data
+
+volumes:
+  game_mongo_data:
+  game_redis_data:

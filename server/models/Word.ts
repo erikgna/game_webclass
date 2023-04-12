@@ -5,4 +5,4 @@ const palavraScheme = new mongoose.Schema({
   dica: String,
 });
 
-export const Palavra = mongoose.model("Palavra", palavraScheme);
+export const Palavra = mongoose.model("Model", palavraScheme, "palavras");
