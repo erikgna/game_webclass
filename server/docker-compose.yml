@@ -1,8 +1,8 @@
 version: "3.7"
 
-# networks:
-#   web:
-#     external: true
+networks:
+  web:
+    external: true
 
 services:
   web_game_class:
@@ -13,14 +13,14 @@ services:
     depends_on:
       - web_game_class_api
     restart: always
-    # labels:
-    #   - "traefik.enable=true"
-    #   - "traefik.http.routers.webclass.rule=Host(`webclass.erikna.com`)"
-    #   - "traefik.http.routers.webclass.entrypoints=web, websecure"
-    #   - "traefik.http.routers.webclass.tls=true"
-    #   - "traefik.http.routers.webclass.tls.certresolver=production"
-    # networks:
-    #   - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.webclass.rule=Host(`webclass.erikna.com`)"
+      - "traefik.http.routers.webclass.entrypoints=web, websecure"
+      - "traefik.http.routers.webclass.tls=true"
+      - "traefik.http.routers.webclass.tls.certresolver=production"
+    networks:
+      - web
   web_game_class_api:
     build: .
     ports:
