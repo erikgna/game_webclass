@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  web_game_class:
+    build: .
+    container_name: web_game_class
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.webclass.rule=Host(`webclass.erikna.com`)"
+      - "traefik.http.routers.webclass.entrypoints=web, websecure"
+      - "traefik.http.routers.webclass.tls=true"
+      - "traefik.http.routers.webclass.tls.certresolver=production"
+    networks:
+      - web
+      - class_game
+
+networks:
+  class_game:
+    external: false
+  web:
+    external: true

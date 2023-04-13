@@ -1,24 +1,21 @@
-version: "3"
+version: "3.7"
+
+networks:
+  class_game:
+    external: false
 
 services:
-  mongodb:
-    image: mongo
-    container_name: mongodb
-    restart: always
+  web_game_class_api:
+    build: .
+    container_name: web_game_class_api
+    environment:
+      - SOCKET_PORT=8029
+      - REST_PORT=8030
+      - MONGO_CONNECTION=mongodb://erik:Utc30rgaq*@dashboard.erikna.com:27017/
+      - REDIS_CONNECTION=redis://dashboard.erikna.com:6379/
     ports:
-      - "27017:27017"
-    volumes:
-      - game_mongo_data:/data/db
-
-  redis:
-    image: redis
-    container_name: redis
-    restart: always
-    ports:
-      - "6379:6379"
-    volumes:
-      - game_redis_data:/data
-
-volumes:
-  game_mongo_data:
-  game_redis_data:
+      - "8029:8029"
+      - "8030:8030"
+    networks:
+      - class_game
+    restart: unless-stopped
