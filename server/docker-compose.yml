@@ -26,6 +26,7 @@ services:
     container_name: web_game_class_api
     depends_on:
       - redis_web_class_api
+    restart: always
     labels:
       - traefik.enable=true
       - traefik.http.routers.webclassapi.rule=Host(`webclassapi.erikna.com`)
@@ -35,10 +36,7 @@ services:
       - traefik.http.routers.webclassapi.tls.certresolver=production
     networks:
       - web
-  restart: unless-stopped
   redis_web_class_api:
-    ports:
-      - "6020:6020"
     image: redis
     container_name: redis_web_class_api
     command: redis-server --port 6020 --requirepass Utc30rgaq*
