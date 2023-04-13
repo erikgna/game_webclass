@@ -5,7 +5,7 @@ import { GameStatus, SocketConstants } from "../constants/Socket.constants";
 </script>
 
 <script lang="ts">
-const socket = io("http://localhost:8029");
+const socket = io("http://web_game_class_api:8029");
 const lines = [
   ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
   ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
