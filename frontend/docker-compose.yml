@@ -12,10 +12,7 @@ services:
       - "traefik.http.routers.webclass.tls.certresolver=production"
     networks:
       - web
-      - class_game
 
 networks:
-  class_game:
-    external: false
   web:
     external: true
