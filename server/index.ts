@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import server from "http";
+import morgan from "morgan";
 
 import wordManage from "./routes/WordManage";
 import { client } from "./redis";
@@ -12,7 +13,8 @@ const app: Application = express();
 const http = server.createServer(app);
 io.listen(http);
 
-app.use(cors());
+app.use(morgan("combined"));
+app.use(cors({ origin: CORS }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

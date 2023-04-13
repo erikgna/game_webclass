@@ -8,6 +8,7 @@ import { CORS } from "./config";
 
 const TOKEN_EXPIRATION_TIME = 1000 * 60 * 5;
 dotenv.config();
+
 export const io = new Server({
   cors: {
     origin: CORS,
@@ -162,6 +163,7 @@ io.on(SocketConstants.CONNECTION, (socket) => {
           dica: state.dica,
           guessedLetters: state.guessedLetters,
           wordList: state.wordList,
+          timestamp: state.timestamp,
         });
       }
     } catch (_) {}
