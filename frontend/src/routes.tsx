@@ -1,6 +1,6 @@
-import GameBoard from "./views/GameBoard.vue";
-import Dashboard from "./views/Dashboard.vue";
-import { createMemoryHistory, createRouter } from "vue-router"
+import GameBoard from "./components/GameBoard.vue";
+import Dashboard from "./components/Dashboard.vue";
+import { createWebHistory, createRouter } from "vue-router"
 
 const routes = [
     { path: "/", component: GameBoard },
@@ -8,7 +8,7 @@ const routes = [
 ]
 
 const router = createRouter({
-    history: createMemoryHistory(),
+    history: createWebHistory(),
     routes,
 })
 
