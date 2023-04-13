@@ -1,6 +1,6 @@
 import GameBoard from "./views/GameBoard.vue";
 import Dashboard from "./views/Dashboard.vue";
-import { createWebHistory, createRouter } from "vue-router"
+import { createWebHashHistory, createRouter } from "vue-router"
 
 const routes = [
     { path: "/", component: GameBoard },
@@ -8,8 +8,7 @@ const routes = [
 ]
 
 const router = createRouter({
-
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes,
 })
 
