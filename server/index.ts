@@ -14,15 +14,7 @@ const http = server.createServer(app);
 io.listen(http);
 
 app.use(morgan("combined"));
-app.use(cors({ origin: CORS, optionsSuccessStatus: 200 }));
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  if (err.name === "CorsError") {
-    console.error(`Erro de CORS: ${req.ip}`);
-    res.status(403).send("Requisição bloqueada por política CORS");
-  } else {
-    next();
-  }
-});
+app.use(cors({ origin: CORS }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

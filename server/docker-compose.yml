@@ -8,8 +8,8 @@ services:
   web_game_class:
     build: ../frontend
     container_name: web_game_class
-    ports:
-      - "8029:8029"
+    networks:
+      - web
     depends_on:
       - web_game_class_api
     restart: always
@@ -19,8 +19,6 @@ services:
       - "traefik.http.routers.webclass.entrypoints=web, websecure"
       - "traefik.http.routers.webclass.tls=true"
       - "traefik.http.routers.webclass.tls.certresolver=production"
-    networks:
-      - web
   web_game_class_api:
     build: .
     ports:
@@ -28,8 +26,19 @@ services:
     container_name: web_game_class_api
     depends_on:
       - redis_web_class_api
-    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webclassapi.rule=Host(`webclassapi.erikna.com`)
+      - traefik.http.routers.webclassapi.entrypoints=web, websecure
+      - traefik.http.routers.webclassapi.tls=true
+      - traefik.http.services.webclassapi.loadbalancer.server.port=8030
+      - traefik.http.routers.webclassapi.tls.certresolver=production
+    networks:
+      - web
+  restart: unless-stopped
   redis_web_class_api:
+    ports:
+      - "6020:6020"
     image: redis
     container_name: redis_web_class_api
     command: redis-server --port 6020 --requirepass Utc30rgaq*
