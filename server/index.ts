@@ -12,7 +12,7 @@ const app: Application = express();
 const http = server.createServer(app);
 io.listen(http);
 
-app.use(cors({ origin: CORS }));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
