@@ -16,6 +16,13 @@ services:
     ports:
       - "8029:8029"
       - "8030:8030"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webclassapi.rule=Host(`webclassapi.erikna.com`)
+      - traefik.http.routers.webclassapi.entrypoints=web, websecure
+      - traefik.http.routers.webclassapi.tls=true
+      - traefik.http.services.webclassapi.loadbalancer.server.port=8029,8030
+      - traefik.http.routers.webclassapi.tls.certresolver=production
     networks:
       - web
     restart: unless-stopped
