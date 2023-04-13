@@ -9,19 +9,18 @@ services:
     build: .
     container_name: web_game_class_api
     environment:
-      - SOCKET_PORT=8029
-      - REST_PORT=8030
+      - PORT=8030
+      - CORS=https://webclass.erikna.com
       - MONGO_CONNECTION=mongodb://erik:Utc30rgaq*@dashboard.erikna.com:27017/
       - REDIS_CONNECTION=redis://dashboard.erikna.com:6379/
     ports:
-      - "8029:8029"
       - "8030:8030"
     labels:
       - traefik.enable=true
       - traefik.http.routers.webclassapi.rule=Host(`webclassapi.erikna.com`)
       - traefik.http.routers.webclassapi.entrypoints=web, websecure
       - traefik.http.routers.webclassapi.tls=true
-      - traefik.http.services.webclassapi.loadbalancer.server.port=8029,8030
+      - traefik.http.services.webclassapi.loadbalancer.server.port=8030
       - traefik.http.routers.webclassapi.tls.certresolver=production
     networks:
       - web

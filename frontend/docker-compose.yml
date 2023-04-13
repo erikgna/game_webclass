@@ -4,6 +4,9 @@ services:
   web_game_class:
     build: .
     container_name: web_game_class
+    environment:
+      - VITE_SOCKET_URL="https://webclassapi.erikna.com"
+      - VITE_REST_URL="https://webclassapi.erikna.com/api/v1"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.webclass.rule=Host(`webclass.erikna.com`)"

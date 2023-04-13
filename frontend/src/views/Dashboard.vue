@@ -4,7 +4,7 @@ import axios from "axios";
 </script>
 
 <script lang="ts">
-const DEFAULT_URL = "https://webclassapi.erikna.com/api/v1/manage/";
+const DEFAULT_URL = import.meta.env.VITE_REST_URL + "/manage/";
 interface IPalavra {
   _id?: string;
   palavra: string;
@@ -17,9 +17,10 @@ const newWord = ref({ palavra: "", dica: "" });
 export default {
   methods: {
     createItem(item: IPalavra) {
-      axios
-        .post(DEFAULT_URL, item)
-        .then((response) => allWords.value.push(response.data));
+      axios.post(DEFAULT_URL, item).then((response) => {
+        allWords.value.push(response.data);
+        newWord.value = { palavra: "", dica: "" };
+      });
     },
     editItem(item: IPalavra) {
       axios.patch(DEFAULT_URL + item._id, item).then((_) => {

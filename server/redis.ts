@@ -1,9 +1,9 @@
 import { createClient } from "redis";
 
-import { REDIS_PASSWORD } from "./env";
+import { REDIS_CONNECTION, REDIS_PASSWORD } from "./config";
 
 export const client = createClient({
-  url: process.env.REDIS_CONNECTION,
+  url: REDIS_CONNECTION,
   password: REDIS_PASSWORD,
 });
 

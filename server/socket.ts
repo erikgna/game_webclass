@@ -1,15 +1,16 @@
 import { Server } from "socket.io";
-
+import dotenv from "dotenv";
 import { SocketConstants } from "./constants/SocketConstants";
 import { Palavra } from "./models/Word";
 import { client } from "./redis";
 import { IGame } from "./interfaces/Game";
+import { CORS } from "./config";
 
 const TOKEN_EXPIRATION_TIME = 1000 * 60 * 5;
-
+dotenv.config();
 export const io = new Server({
   cors: {
-    origin: "https://webclass.erikna.com",
+    origin: CORS,
   },
 });
 

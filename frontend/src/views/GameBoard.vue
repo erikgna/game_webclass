@@ -5,7 +5,7 @@ import { GameStatus, SocketConstants } from "../constants/Socket.constants";
 </script>
 
 <script lang="ts">
-const socket = io("https://webclassapi.erikna.com");
+const socket = io(import.meta.env.VITE_SOCKET_URL ?? "");
 const lines = [
   ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
   ["A", "S", "D", "F", "G", "H", "J", "K", "L"],

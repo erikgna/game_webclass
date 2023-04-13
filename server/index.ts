@@ -1,16 +1,18 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import mongoose from "mongoose";
+import server from "http";
 
 import wordManage from "./routes/WordManage";
 import { client } from "./redis";
 import { io } from "./socket";
-
-dotenv.config();
+import { CORS, MONGO_CONNECTION, PORT } from "./config";
 
 const app: Application = express();
-app.use(cors());
+const http = server.createServer(app);
+io.listen(http);
+
+app.use(cors({ origin: CORS }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -26,11 +28,10 @@ app.use((req: Request, res: Response) => {
 
 client
   .connect()
-  .then(() => io.listen(Number(process.env.SOCKET_PORT || "8029")));
-
-const port = process.env.REST_PORT || 8030;
-app.listen(port, () =>
-  mongoose
-    .connect(process.env.MONGO_CONNECTION!)
-    .then(() => console.log(`The server is running on the port ${port}`))
-);
+  .then(() =>
+    mongoose
+      .connect(MONGO_CONNECTION!)
+      .then(() =>
+        http.listen(PORT || 8030, () => console.log("Server is running"))
+      )
+  );
