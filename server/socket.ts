@@ -9,7 +9,7 @@ const TOKEN_EXPIRATION_TIME = 1000 * 60 * 5;
 
 export const io = new Server({
   cors: {
-    origin: "*",
+    origin: "https://webclass.erikna.com",
   },
 });
 

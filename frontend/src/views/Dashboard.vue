@@ -4,7 +4,7 @@ import axios from "axios";
 </script>
 
 <script lang="ts">
-const DEFAULT_URL = "http://localhost:8030/api/v1/manage/";
+const DEFAULT_URL = "web_game_class_api:8030/api/v1/manage/";
 interface IPalavra {
   _id?: string;
   palavra: string;
