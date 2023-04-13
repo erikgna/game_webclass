@@ -3,6 +3,7 @@ version: "3.7"
 networks:
   web:
     external: true
+  game_net:
 
 services:
   web_game_class:
@@ -36,6 +37,7 @@ services:
       - traefik.http.routers.webclassapi.tls.certresolver=production
     networks:
       - web
+      - game_net
   redis_web_class_api:
     image: redis
     container_name: redis_web_class_api
@@ -45,6 +47,8 @@ services:
     restart: always
     volumes:
       - game_redis_data:/data
+    networks:
+      - game_net
 
 volumes:
   game_redis_data:
