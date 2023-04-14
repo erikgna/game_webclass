@@ -14,7 +14,7 @@ const app: Application = express();
 // io.listen(http);
 
 app.use(morgan("combined"));
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: CORS }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
