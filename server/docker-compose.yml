@@ -1,44 +1,42 @@
 version: "3.7"
 
-networks:
-  web:
-    external: true
-  game_net:
-    driver: bridge
+# networks:
+#   web:
+#     external: true
 
 services:
-  web_game_class:
-    build: ../frontend
-    container_name: web_game_class
-    networks:
-      - web
-    depends_on:
-      - web_game_class_api
-    restart: always
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.webclass.rule=Host(`webclass.erikna.com`)"
-      - "traefik.http.routers.webclass.entrypoints=web, websecure"
-      - "traefik.http.routers.webclass.tls=true"
-      - "traefik.http.routers.webclass.tls.certresolver=production"
-  web_game_class_api:
-    build: .
-    container_name: web_game_class_api
-    depends_on:
-      - redis_web_class_api
-      - mongo_web_class_api
-    restart: always
-    ports:
-      - "8030:8030"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.webclassapi.rule=Host(`webclassapi.erikna.com`)
-      - traefik.http.routers.webclassapi.entrypoints=web, websecure
-      - traefik.http.routers.webclassapi.tls=true
-      - traefik.http.services.webclassapi.loadbalancer.server.port=8030
-      - traefik.http.routers.webclassapi.tls.certresolver=production
-    networks:
-      - web
+  # web_game_class:
+  #   build: ../frontend
+  #   container_name: web_game_class
+  #   networks:
+  #     - web
+  #   depends_on:
+  #     - web_game_class_api
+  #   restart: always
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.webclass.rule=Host(`webclass.erikna.com`)"
+  #     - "traefik.http.routers.webclass.entrypoints=web, websecure"
+  #     - "traefik.http.routers.webclass.tls=true"
+  #     - "traefik.http.routers.webclass.tls.certresolver=production"
+  # web_game_class_api:
+  #   build: .
+  #   container_name: web_game_class_api
+  #   depends_on:
+  #     - redis_web_class_api
+  #     - mongo_web_class_api
+  #   restart: always
+  #   ports:
+  #     - "8030:8030"
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.routers.webclassapi.rule=Host(`webclassapi.erikna.com`)
+  #     - traefik.http.routers.webclassapi.entrypoints=web, websecure
+  #     - traefik.http.routers.webclassapi.tls=true
+  #     - traefik.http.services.webclassapi.loadbalancer.server.port=8030
+  #     - traefik.http.routers.webclassapi.tls.certresolver=production
+  #   networks:
+  #     - web
   redis_web_class_api:
     image: redis
     container_name: redis_web_class_api
@@ -46,19 +44,23 @@ services:
     environment:
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
     restart: always
+    ports:
+      - "6020:6020"
     volumes:
       - game_redis_data:/data
-    networks:
-      - web
+    # networks:
+    #   - web
   mongo_web_class_api:
+    ports:
+      - "27017:27017"
     container_name: mongo_web_class_api
     image: mongo
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: erik
       MONGO_INITDB_ROOT_PASSWORD: Utc30rgaq*
-    networks:
-      - web
+    # networks:
+    #   - web
     volumes:
       - game_mongo_data:/data
 
