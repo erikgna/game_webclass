@@ -33,6 +33,7 @@ services:
       - traefik.enable=false
     networks:
       - game_net
+      - web
   redis_web_class_api:
     image: redis
     container_name: redis_web_class_api
