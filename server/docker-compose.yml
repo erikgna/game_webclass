@@ -4,6 +4,7 @@ networks:
   web:
     external: true
   game_net:
+    driver: bridge
 
 services:
   web_game_class:
@@ -11,6 +12,7 @@ services:
     container_name: web_game_class
     networks:
       - web
+      - game_net
     depends_on:
       - web_game_class_api
     restart: always
@@ -22,19 +24,12 @@ services:
       - "traefik.http.routers.webclass.tls.certresolver=production"
   web_game_class_api:
     build: .
-    ports:
-      - "8030:8030"
     container_name: web_game_class_api
     depends_on:
       - redis_web_class_api
     restart: always
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.webclassapi.rule=Host(`webclassapi.erikna.com`)
-      - traefik.http.routers.webclassapi.entrypoints=web, websecure
-      - traefik.http.routers.webclassapi.tls=true
-      - traefik.http.services.webclassapi.loadbalancer.server.port=8030
-      - traefik.http.routers.webclassapi.tls.certresolver=production
+      - traefik.enable=false
     networks:
       - web
       - game_net
