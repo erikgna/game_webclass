@@ -38,7 +38,6 @@ services:
       - traefik.http.services.webclassapi.loadbalancer.server.port=8030
       - traefik.http.routers.webclassapi.tls.certresolver=production
     networks:
-      - game_net
       - web
   redis_web_class_api:
     image: redis
@@ -50,7 +49,7 @@ services:
     volumes:
       - game_redis_data:/data
     networks:
-      - game_net
+      - web
   mongo_web_class_api:
     container_name: mongo_web_class_api
     image: mongo
@@ -59,7 +58,10 @@ services:
       MONGO_INITDB_ROOT_USERNAME: erik
       MONGO_INITDB_ROOT_PASSWORD: Utc30rgaq*
     networks:
-      - game_net
+      - web
+    volumes:
+      - game_mongo_data:/data
 
 volumes:
   game_redis_data:
+  game_mongo_data:
