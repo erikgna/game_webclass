@@ -9,7 +9,7 @@ import { CORS } from "./config";
 const TOKEN_EXPIRATION_TIME = 1000 * 60 * 5;
 dotenv.config();
 
-export const io = new Server({});
+export const io = new Server();
 
 io.on(SocketConstants.CONNECTION, (socket) => {
   socket.on(SocketConstants.NEW_GAME, async (token) => {

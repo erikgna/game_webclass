@@ -31,7 +31,7 @@ services:
     ports:
       - "8030:8030"
     labels:
-      - traefik.enable=false
+      - traefik.enable=true
       - traefik.http.routers.webclassapi.rule=Host(`webclassapi.erikna.com`)
       - traefik.http.routers.webclassapi.entrypoints=web, websecure
       - traefik.http.routers.webclassapi.tls=true
