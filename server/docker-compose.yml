@@ -1,8 +1,8 @@
 version: "3.7"
 
 networks:
-  # web:
-  #   external: true
+  web:
+    external: true
   game_net:
     driver: bridge
 
