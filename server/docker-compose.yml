@@ -12,7 +12,6 @@ services:
     container_name: web_game_class
     networks:
       - web
-      - game_net
     depends_on:
       - web_game_class_api
     restart: always
@@ -31,6 +30,11 @@ services:
     restart: always
     labels:
       - traefik.enable=false
+      - traefik.http.routers.webclassapi.rule=Host(`webclassapi.erikna.com`)
+      - traefik.http.routers.webclassapi.entrypoints=web, websecure
+      - traefik.http.routers.webclassapi.tls=true
+      - traefik.http.services.webclassapi.loadbalancer.server.port=8030
+      - traefik.http.routers.webclassapi.tls.certresolver=production
     networks:
       - game_net
       - web
