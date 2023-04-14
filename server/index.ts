@@ -10,8 +10,8 @@ import { io } from "./socket";
 import { CORS, MONGO_CONNECTION, PORT } from "./config";
 
 const app: Application = express();
-const http = server.createServer(app);
-io.listen(http);
+// const http = server.createServer(app);
+// io.listen(http);
 
 app.use(morgan("combined"));
 app.use(cors({ origin: "*" }));
@@ -34,6 +34,6 @@ client
     mongoose
       .connect(MONGO_CONNECTION!)
       .then(() =>
-        http.listen(PORT || 8030, () => console.log("Server is running"))
+        app.listen(PORT || 8030, () => console.log("Server is running"))
       )
   );

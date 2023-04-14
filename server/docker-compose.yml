@@ -28,6 +28,8 @@ services:
       - redis_web_class_api
       - mongo_web_class_api
     restart: always
+    ports:
+      - "8030:8030"
     labels:
       - traefik.enable=false
       - traefik.http.routers.webclassapi.rule=Host(`webclassapi.erikna.com`)
