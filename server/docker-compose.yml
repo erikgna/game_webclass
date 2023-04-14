@@ -1,8 +1,8 @@
 version: "3.7"
 
 networks:
-  web:
-    external: true
+  # web:
+  #   external: true
   game_net:
     driver: bridge
 
@@ -27,11 +27,11 @@ services:
     container_name: web_game_class_api
     depends_on:
       - redis_web_class_api
+      - mongo_web_class_api
     restart: always
     labels:
       - traefik.enable=false
     networks:
-      - web
       - game_net
   redis_web_class_api:
     image: redis
@@ -42,6 +42,15 @@ services:
     restart: always
     volumes:
       - game_redis_data:/data
+    networks:
+      - game_net
+  mongo_web_class_api:
+    container_name: mongo_web_class_api
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: erik
+      MONGO_INITDB_ROOT_PASSWORD: Utc30rgaq*
     networks:
       - game_net
 
