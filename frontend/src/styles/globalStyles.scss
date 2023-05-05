@@ -1,0 +1,120 @@
+@import "global";
+
+.modal {
+  z-index: 99;
+  top: 0;
+  left: 0;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #00000050;
+  width: 100vw;
+  height: 100vh;
+}
+
+.divider {
+  background: $color-orange;
+  height: 1px;
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+
+  &-center {
+    &.container-center {
+      width: 100vw;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  &-between {
+    &.container-between {
+      width: 100vw;
+      height: 100vh;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+
+  .button:last-child {
+    margin-left: 8px;
+  }
+}
+
+.button {
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  font-family: "Roboto", sans-serif;
+  letter-spacing: 0.85px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+
+  &-orange {
+    &.button-orange {
+      color: $color-black;
+      background: $color-orange;
+      @include box-shadow(2px, 2px, 2px, 0px, rgba($color-orange, 0.5));
+    }
+  }
+
+  &-white {
+    &.button-white {
+      color: $color-black;
+      background: $color-white;
+      @include box-shadow(2px, 2px, 2px, 0px, rgba($color-white, 0.5));
+    }
+  }
+
+  &-red {
+    &.button-red {
+      color: $color-white;
+      background: $color-red;
+      @include box-shadow(2px, 2px, 2px, 0px, rgba($color-red, 0.5));
+    }
+  }
+
+  &:hover {
+    opacity: 0.75;
+    transition: 200ms ease-in;
+  }
+}
+
+form {
+  .buttons {
+    margin-top: 16px;
+  }
+}
+
+.form-item {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+
+  label {
+    font-size: 16px;
+    font-weight: 600;
+    padding-bottom: 6px;
+  }
+
+  input {
+    outline: none;
+    border: 1px solid $color-whitesh;
+    border-radius: 3px;
+    padding: 12px 8px;
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+  }
+}

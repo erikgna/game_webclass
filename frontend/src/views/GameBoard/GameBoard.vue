@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { io } from "socket.io-client";
-import { GameStatus, SocketConstants } from "../constants/Socket.constants";
+import { GameStatus, SocketConstants } from "../../constants/Socket.constants";
 </script>
 
 <script lang="ts">
@@ -50,7 +50,11 @@ const dealInterval = () => {
 
     if (timestamp.value <= 0) {
       timestamp.value = fiveMinutes;
-      socket.emit(SocketConstants.OUT_OF_TIME, localStorage.getItem("token"));
+      const token = document.cookie
+        .split(";")
+        .find((c) => c.trim().startsWith("token="))
+        ?.split("=")[1];
+      socket.emit(SocketConstants.OUT_OF_TIME, token);
       clearInterval(interval.value);
     }
   }, 1000);
@@ -60,11 +64,15 @@ const gameObj = ref(defaultGame);
 const status = ref(GameStatus.ACTIVE);
 const timestamp = ref(fiveMinutes);
 const interval = ref();
+const error = ref(false);
 
 socket.on(SocketConstants.CONNECT, () => {
-  const storageToken = localStorage.getItem("token");
-  if (storageToken) {
-    socket.emit(SocketConstants.AUTHENTICATE, storageToken);
+  const token = document.cookie
+    .split(";")
+    .find((c) => c.trim().startsWith("token="))
+    ?.split("=")[1];
+  if (token) {
+    socket.emit(SocketConstants.AUTHENTICATE, token);
     return;
   }
 });
@@ -92,22 +100,46 @@ socket.on(SocketConstants.GAME_WON, (item) => {
   clearInterval(interval.value);
 });
 
+socket.on(SocketConstants.ERROR, (_) => {
+  error.value = true;
+});
+
 export default {
   methods: {
     createToken() {
       const token = generateRandomString(30);
-      localStorage.setItem("token", token);
+
+      const date = new Date();
+      date.setTime(date.getTime() + 30 * 24 * 60 * 60 * 1000);
+      document.cookie = `token=${token}; expires=${date.toUTCString()}; path=/`;
+
       socket.emit(SocketConstants.NEW_GAME, token);
       status.value = GameStatus.ACTIVE;
 
       dealInterval();
     },
     sendLetter(letter: string) {
-      const token = localStorage.getItem("token");
+      const token = document.cookie
+        .split(";")
+        .find((c) => c.trim().startsWith("token="))
+        ?.split("=")[1];
+
       socket.emit(SocketConstants.GUESS_LETTER, { token, letter });
     },
     closeModal() {
       status.value = GameStatus.ACTIVE;
+    },
+    closeErrorModal() {
+      error.value = false;
+    },
+    clearState() {
+      gameObj.value = defaultGame;
+      status.value = GameStatus.ACTIVE;
+      timestamp.value = fiveMinutes;
+      error.value = false;
+    },
+    navigation(path: string) {
+      window.location.replace(path);
     },
   },
 };
@@ -115,14 +147,34 @@ export default {
 
 <template>
   <div class="modal" v-if="status !== GameStatus.ACTIVE">
-    <div>
+    <div class="modal-content">
       <h2 class="win" v-if="status === GameStatus.WON">Você venceu!</h2>
       <h2 class="lost" v-if="status === GameStatus.LOST">Você perdeu!</h2>
       <p><strong>A palavra era: </strong>{{ gameObj.word }}</p>
-      <button class="button" @click.prevent="createToken">Novo jogo</button>
+      <div class="buttons">
+        <button class="button button-orange" @click.prevent="createToken">
+          Novo jogo
+        </button>
+        <button class="button button-white" @click.prevent="clearState">
+          Voltar
+        </button>
+      </div>
     </div>
   </div>
-  <div v-if="gameObj.dica.length >= 1" class="screen">
+
+  <div class="modal" v-if="error">
+    <div class="modal-content">
+      <h2 style="margin-bottom: 16px">Ocorreu um erro</h2>
+      <button class="button button-orange" @click.prevent="closeErrorModal">
+        Tentar novamente
+      </button>
+    </div>
+  </div>
+
+  <section
+    v-if="gameObj.dica.length >= 1"
+    class="container container-between game-board"
+  >
     <div class="content">
       <h3>{{ secondsToMinutes(timestamp) }}</h3>
       <p>
@@ -130,25 +182,30 @@ export default {
       </p>
       <p><strong>Dica: </strong> {{ gameObj.dica }}</p>
 
-      <div class="wrongLatters">
+      <div class="wrong-letters">
         <h2 v-for="item in gameObj.guessedLetters" :key="item">{{ item }}</h2>
       </div>
 
-      <div class="word">
-        <div v-for="(item, index) in gameObj.wordList" :key="item + index">
+      <div class="letters-line">
+        <div
+          class="letter-box letter-box-orange"
+          v-for="(item, index) in gameObj.wordList"
+          :key="item + index"
+        >
           <h2 v-if="item !== '.'">{{ item }}</h2>
         </div>
       </div>
     </div>
 
     <div>
-      <div v-for="line in lines" :key="line.length" class="line">
+      <div v-for="line in lines" :key="line.length" class="letters-line">
         <div
+          class="letter-box letter-box-white"
           v-for="item in line"
           :key="item"
           v-bind:class="{
-            greenBox: gameObj.wordList.includes(item),
-            redBox:
+            'letter-box-green': gameObj.wordList.includes(item),
+            'letter-box-red':
               !gameObj.wordList.includes(item) &&
               gameObj.guessedLetters.includes(item),
           }"
@@ -158,184 +215,24 @@ export default {
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div v-if="gameObj.dica.length === 0" class="screenCenter">
-    <button class="button" @click.prevent="createToken">Começar jogo</button>
-  </div>
+  <section v-if="gameObj.dica.length === 0" class="container container-center">
+    <div class="buttons">
+      <button class="button button-orange" @click.prevent="createToken">
+        Começar jogo
+      </button>
+      <button
+        class="button button-white"
+        @click.prevent="navigation('dashboard')"
+      >
+        Dashboard
+      </button>
+    </div>
+  </section>
 </template>
 
 <style lang="scss">
-.modal {
-  top: 0;
-  left: 0;
-  position: fixed;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #00000050;
-  width: 100vw;
-  height: 100vh;
-
-  div {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 32px 48px;
-    background-color: #2e2e2e;
-    border-radius: 6px;
-
-    h2 {
-      font-size: 24px;
-    }
-    p {
-      font-size: 16px;
-      margin: 8px 0 24px 0;
-    }
-
-    .win {
-      color: var(--green);
-    }
-    .lost {
-      color: var(--red);
-    }
-  }
-}
-.screen {
-  height: 100vh;
-  width: 100vw;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 32px 0;
-}
-.screenCenter {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-
-  h3 {
-    color: var(--orange);
-    font-size: 28px;
-    margin-bottom: 2rem;
-  }
-
-  .wrongLatters {
-    margin-top: 4rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--white);
-    border-radius: 6px;
-    min-height: 2.5rem;
-    min-width: 300px;
-    padding: 0 8px;
-
-    h2 {
-      &:not(:last-child) {
-        margin-right: 12px;
-      }
-    }
-  }
-
-  .word {
-    padding-top: 6rem;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    div {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 3rem;
-      height: 3rem;
-      border: 1px solid var(--orange);
-      border-radius: 6px;
-      margin-top: 0.75rem;
-
-      &:not(:last-child) {
-        margin-right: 0.75rem;
-      }
-
-      @media (max-width: 600px) {
-        height: 1.75rem;
-        width: 1.75rem;
-
-        h2 {
-          font-size: 1rem;
-        }
-        &:not(:last-child) {
-          margin-right: 0.5rem;
-        }
-      }
-    }
-  }
-}
-
-.line {
-  display: flex;
-  justify-content: center;
-  margin-top: 0.75rem;
-
-  div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 3rem;
-    height: 3rem;
-    border: 1px solid var(--white);
-    border-radius: 6px;
-    cursor: pointer;
-
-    &:not(:last-child) {
-      margin-right: 0.75rem;
-    }
-
-    @media (max-width: 600px) {
-      width: 1.75rem;
-      height: 1.75rem;
-
-      &:not(:last-child) {
-        margin-right: 0.25rem;
-      }
-
-      h2 {
-        font-size: 1rem;
-      }
-    }
-  }
-}
-.redBox {
-  cursor: not-allowed !important;
-  border: 1px solid var(--red) !important;
-}
-.greenBox {
-  cursor: not-allowed !important;
-  border: 1px solid var(--green) !important;
-}
-.button {
-  cursor: pointer;
-  color: var(--dark);
-  font-weight: 600;
-  background: var(--orange);
-  border-radius: 40px;
-  width: 8.5rem;
-  height: 2.5rem;
-  border: none;
-
-  &:hover {
-    opacity: 0.75;
-    transition: 200ms ease-in;
-  }
-}
+@import "./styles.scss";
+@import "../../styles/globalStyles.scss";
 </style>
