@@ -52,7 +52,7 @@ services:
       - web
   mongo_web_class_api:
     ports:
-      - "27017:27017"
+      - "27018:27018"
     container_name: mongo_web_class_api
     image: mongo
     restart: always
