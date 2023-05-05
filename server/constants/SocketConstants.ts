@@ -8,4 +8,5 @@ export enum SocketConstants {
   GAME_OVER = "gameOver",
   GAME_WON = "gameWon",
   GAME_STATE = "gameState",
+  ERROR = "error",
 }

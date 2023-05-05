@@ -15,27 +15,31 @@ export const io = new Server({
 
 io.on(SocketConstants.CONNECTION, (socket) => {
   socket.on(SocketConstants.NEW_GAME, async (token) => {
-    const word = (await Palavra.aggregate([{ $sample: { size: 1 } }]))[0];
+    try {
+      const word = (await Palavra.aggregate([{ $sample: { size: 1 } }]))[0];
 
-    const fiveMinutes = 300000;
-    const state = {
-      word: word.palavra,
-      dica: word.dica,
-      remainingAttempts: word.palavra.length + 3,
-      guessedLetters: [],
-      timestamp: Date.now() + fiveMinutes,
-      wordList: Array.from({ length: word.palavra.length }, () => "."),
-    };
-    await client.set(token, JSON.stringify(state), {
-      EX: TOKEN_EXPIRATION_TIME,
-    });
-    socket.emit(SocketConstants.GAME_STATE, {
-      remainingAttempts: state.remainingAttempts,
-      dica: state.dica,
-      guessedLetters: state.guessedLetters,
-      wordList: state.wordList,
-      timestamp: state.timestamp,
-    });
+      const fiveMinutes = 300000;
+      const state = {
+        word: word.palavra,
+        dica: word.dica,
+        remainingAttempts: word.palavra.length + 3,
+        guessedLetters: [],
+        timestamp: Date.now() + fiveMinutes,
+        wordList: Array.from({ length: word.palavra.length }, () => "."),
+      };
+      await client.set(token, JSON.stringify(state), {
+        EX: TOKEN_EXPIRATION_TIME,
+      });
+      socket.emit(SocketConstants.GAME_STATE, {
+        remainingAttempts: state.remainingAttempts,
+        dica: state.dica,
+        guessedLetters: state.guessedLetters,
+        wordList: state.wordList,
+        timestamp: state.timestamp,
+      });
+    } catch (_) {
+      socket.emit(SocketConstants.ERROR);
+    }
   });
 
   socket.on(SocketConstants.AUTHENTICATE, async (token) => {
@@ -51,18 +55,24 @@ io.on(SocketConstants.CONNECTION, (socket) => {
           wordList: state.wordList,
         });
       }
-    } catch (_) {}
+    } catch (_) {
+      socket.emit(SocketConstants.ERROR);
+    }
   });
 
   socket.on(SocketConstants.OUT_OF_TIME, async (token) => {
-    const value = await client.get(token);
-    if (value) {
-      const state = JSON.parse(value) as IGame;
+    try {
+      const value = await client.get(token);
+      if (value) {
+        const state = JSON.parse(value) as IGame;
 
-      if (state.timestamp < Date.now()) {
-        socket.emit(SocketConstants.GAME_OVER, state.word);
-        await client.del(token);
+        if (state.timestamp < Date.now()) {
+          socket.emit(SocketConstants.GAME_OVER, state.word);
+          await client.del(token);
+        }
       }
+    } catch (_) {
+      socket.emit(SocketConstants.ERROR);
     }
   });
 
@@ -164,6 +174,8 @@ io.on(SocketConstants.CONNECTION, (socket) => {
           timestamp: state.timestamp,
         });
       }
-    } catch (_) {}
+    } catch (_) {
+      socket.emit(SocketConstants.ERROR);
+    }
   });
 });
