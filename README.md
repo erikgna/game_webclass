@@ -8,5 +8,5 @@ botão.
 
 ## Autores 
 
-- [@octokatherine](https://www.github.com/erikgna)
+- [@erikna](https://www.github.com/erikgna)
 
