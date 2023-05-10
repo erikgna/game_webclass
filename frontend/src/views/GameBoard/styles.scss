@@ -1,0 +1,109 @@
+@import "../../styles/global";
+
+.game-board {
+  text-align: center;
+
+  h3 {
+    color: $color-orange;
+    font-size: 28px;
+    margin-bottom: 2rem;
+  }
+
+  .wrong-letters {
+    margin-top: 4rem;
+    margin-bottom: 48px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid $color-white;
+    border-radius: 6px;
+    min-height: 2.5rem;
+    min-width: 300px;
+
+    h2 {
+      &:not(:last-child) {
+        margin-right: 12px;
+      }
+    }
+  }
+}
+
+.letter-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 6px;
+
+  h2 {
+    font-size: 1.5rem;
+
+    @media (max-width: 600px) {
+      font-size: 1rem;
+    }
+  }
+
+  &:not(:last-child) {
+    margin-right: 0.5rem;
+  }
+
+  &-orange {
+    &.letter-box-orange {
+      border: 1px solid $color-orange;
+    }
+  }
+
+  &-white {
+    &.letter-box-white {
+      border: 1px solid $color-white;
+    }
+  }
+
+  &-white {
+    &.letter-box-red {
+      cursor: not-allowed;
+      border: 1px solid $color-red;
+    }
+  }
+
+  &-white {
+    &.letter-box-green {
+      cursor: not-allowed;
+      border: 1px solid $color-green;
+    }
+  }
+
+  @media (max-width: 600px) {
+    height: 1.75rem;
+    width: 1.75rem;
+  }
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 48px;
+  background-color: $color-black;
+  border-radius: 6px;
+
+  p {
+    margin-bottom: 16px;
+  }
+
+  .win {
+    color: $color-green;
+  }
+  .lost {
+    color: $color-red;
+  }
+}
+
+.letters-line {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}

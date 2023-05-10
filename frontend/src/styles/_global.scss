@@ -1,0 +1,12 @@
+$color-white: #ffffff;
+$color-whitesh: #9c9c9cd0;
+$color-black: #414141;
+$color-orange: #ff8c00;
+$color-red: #e53935;
+$color-green: #7cb518;
+
+@mixin box-shadow($x, $y, $blur, $spread, $color) {
+  box-shadow: $x $y $blur $spread $color;
+  -webkit-box-shadow: $x $y $blur $spread $color;
+  -moz-box-shadow: $x $y $blur $spread $color;
+}
