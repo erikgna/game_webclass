@@ -50,7 +50,7 @@ export default {
 <template>
   <section class="container dashboard">
     <h2>Adicionar palavras</h2>
-    <form>
+    <form class="new-word">
       <div class="form-item">
         <label for="palavra">Palavra</label>
         <input
