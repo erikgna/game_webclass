@@ -8,7 +8,7 @@ networks:
 
 services:
   web_game_class:
-    enviroments:
+    environment:
       VITE_SOCKET_URL: "https://webclassapi.erikna.com"
       VITE_REST_URL: "https://webclassapi.erikna.com/api/v1"
     build: ../frontend
@@ -38,7 +38,7 @@ services:
       - traefik.http.routers.webclassapi.tls=true
       - traefik.http.services.webclassapi.loadbalancer.server.port=8030
       - traefik.http.routers.webclassapi.tls.certresolver=production
-    enviroments:
+    environment:
       PORT: "8030"
       CORS: "webclass.erikna.com"
       MONGO_CONNECTION: "mongodb://erik:Utc30rgaq*@mongo_web_class_api:27018/"
