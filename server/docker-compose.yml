@@ -28,13 +28,13 @@ services:
       - redis_web_class_api
       - mongo_web_class_api
     restart: always
-    # labels:
-    #   - traefik.enable=true
-    #   - traefik.http.routers.webclassapi.rule=Host(`webclassapi.erikna.com`)
-    #   - traefik.http.routers.webclassapi.entrypoints=web, websecure
-    #   - traefik.http.routers.webclassapi.tls=true
-    #   - traefik.http.services.webclassapi.loadbalancer.server.port=8030
-    #   - traefik.http.routers.webclassapi.tls.certresolver=production
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webclassapi.rule=Host(`webclassapi.erikna.com`)
+      - traefik.http.routers.webclassapi.entrypoints=web, websecure
+      - traefik.http.routers.webclassapi.tls=true
+      - traefik.http.services.webclassapi.loadbalancer.server.port=8030
+      - traefik.http.routers.webclassapi.tls.certresolver=production
     networks:
       - web
   redis_web_class_api:
