@@ -22,6 +22,12 @@ services:
       - "traefik.http.routers.webclass.tls=true"
       - "traefik.http.routers.webclass.tls.certresolver=production"
   web_game_class_api:
+    environment:
+      PORT: "8030"
+      CORS: "https://webclass.erikna.com"
+      MONGO_CONNECTION: "mongodb://erik:Utc30rgaq*@mongo_web_class_api:27018/"
+      REDIS_CONNECTION: "redis://redis_web_class_api:6020"
+      REDIS_PASSWORD: "Utc30rgaq*"
     build: .
     container_name: web_game_class_api
     depends_on:
