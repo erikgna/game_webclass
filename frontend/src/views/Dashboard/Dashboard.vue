@@ -4,8 +4,7 @@ import axios from "axios";
 </script>
 
 <script lang="ts">
-// const DEFAULT_URL = import.meta.env.VITE_REST_URL + "/manage/";
-const DEFAULT_URL = "https://webclassapi.erikna.com/api/v1/manage/";
+const DEFAULT_URL = "http://web_game_class_api:8030/api/v1/manage/";
 interface IPalavra {
   _id?: string;
   palavra: string;
