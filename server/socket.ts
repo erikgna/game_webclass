@@ -14,6 +14,8 @@ export const io = new Server({
 });
 
 io.on(SocketConstants.CONNECTION, (socket) => {
+  console.log("socket");
+  console.log(socket);
   socket.on(SocketConstants.NEW_GAME, async (token) => {
     try {
       const word = (await Palavra.aggregate([{ $sample: { size: 1 } }]))[0];
