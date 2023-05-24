@@ -40,7 +40,7 @@ services:
       - traefik.http.routers.webclassapi.tls.certresolver=production
     environment:
       PORT: "8030"
-      CORS: "webclass.erikna.com"
+      CORS: "https://webclass.erikna.com"
       MONGO_CONNECTION: "mongodb://erik:Utc30rgaq*@mongo_web_class_api:27018/"
       REDIS_CONNECTION: "redis://redis_web_class_api:6020"
       REDIS_PASSWORD: "Utc30rgaq*"
